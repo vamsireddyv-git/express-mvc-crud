@@ -1,21 +1,15 @@
-let students = [
-    { rollNo : 4661, name : "Vamsi", age : 21,marks : 899,},
-    { rollNo : 4662, name : "Praveen", age : 23, marks : 977 },
-    { rollNo : 4664, name : "Karimulla", age : 21, marks : 700, },
-    { rollNo : 4417, name : "Abhilash", age : 21, marks : 767, },
-    { rollNo : 4370, name : "Laxmi narayana", age : 22, marks : 750,}
-];
+import {student} from "../models/studentModel.js";
 
-export const getStudent = (req,res) => {
-    res.json(students)
+export const getStudent = async (req,res) => {
+    const studentsData = await student.find();
+    res.json(studentsData)
 }
 
-export const postStudents = (req,res) => {
-    const newData = req.body;
-    students.push(newData);
+export const postStudents = async (req,res) => {
+    const newData = await student.insertMany(req.body)
     res.json({
         message:"Data added successfully",
-        newStudent : newData,
+        newStudent : await student.find(),
     })
 }
 
@@ -26,29 +20,26 @@ export const handleError = (err,req,res,next) => {
     })
 }
 
-export const putStudents = (req,res) => {
-    const {rollNo} = req.params;
-    const actualStudent = students.find((student) => {
-        return student.rollNo === Number(rollNo)
-    })
-    if(actualStudent){
-        actualStudent.name = "Rahul";
-        res.send(students);
-    }else{
-            throw new Error(`No student found with rollno ${rollNo}`)
-        }
+export const putStudents = async (req,res) => {
+    const studentId = req.params.Id;
+    const givenData = req.body;
+    const updatedStudent = await student.findByIdAndUpdate(studentId,givenData,{new:true})
+    res.status(200).json(updatedStudent);
 }
 
-export const deleteStudent = (req,res) => {
-    const {rollNo,age} = req.query;
-    const actualStudent = students.find((student) => {
-        return student.rollNo === Number(rollNo) && student.age === Number(age);
-    })
-    if(actualStudent){
-        const index =   students.indexOf(actualStudent);
-        students.splice(index,1);
-        res.send(students);
-    }else{
-            throw new Error(`No student found with rollno ${rollNo} and age ${age}`)
-        }
+export const deleteStudent = async (req,res) => {
+    const sRollNo = Number(req.params.rollNo);
+    try {
+        const deletedStudent = await student.findOneAndDelete({rollNo : sRollNo})
+           if(!deleteStudent){
+             res.status(404).send({
+                message: `No such student found with rol number ${sRollNo}`
+            })
+           }
+            res.send("User deleted successfully")
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
 }

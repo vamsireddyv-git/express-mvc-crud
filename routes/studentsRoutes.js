@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/',getStudent);
 router.post('/',postStudents)
-router.put('/:rollNo',putStudents)
-router.delete('/',deleteStudent)
+router.put('/:Id',putStudents)
+router.delete('/:rollNo',deleteStudent)
 
 export default router;

@@ -1,5 +1,9 @@
 import express from 'express'
 import studentRoutes from './routes/studentsRoutes.js';
+
+import connectDB from './configs/db.js';
+connectDB();
+
 const app = express();
 app.use(express.json())
 
